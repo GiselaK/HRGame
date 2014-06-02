@@ -1,4 +1,4 @@
 HRGame
 ======
 
-Game for Hack Reactordvsb
+Game for Hack Reactor
