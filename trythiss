@@ -1,0 +1,143 @@
+<html>
+
+<head>
+    </head>
+    <canvas id="canvas" height="400" width="500">Get a better browser!</canvas>
+<script type="text/javascript"></script>
+<script>// Gravity 
+// Gravity 
+var width = 500;//width of bg
+var height = 400;//height of bg
+var canvas = ctx = false;
+var frameRate = 1/40; // S
+var frameDelay = frameRate * 400; // ms
+var loopTimer = false;
+
+var ball = {
+    mass: 0.1, //kg
+    radius: 15, // 1px = 1cm  // Size of ball
+    restitution: -0.7// Effects speed 
+    };
+var ball1 = {
+    position: {x: 100, y: 100}, // starting position
+    originalposition: {x: 100, y:100},
+    velocity: {x: 0, y: 0}, // start speed
+};
+var Cd = 0.4;  // EFFECTS SLOW DOWN SPEED
+var rho = 15; // kg / m^3 EFFECTS SLOW DOWN SPEED
+var A = Math.PI * ball.radius * ball.radius / (10000); // m^2
+//var ag = 9.81;  // m / s^2
+var mouse = {x: 0, y: 0, isDown: false};
+
+function getMousePosition(e) {
+    mouse.x = e.pageX - canvas.offsetLeft;
+    mouse.y = e.pageY - canvas.offsetTop;
+}
+var mouseDown = function(e) {
+    if (e.which == 1) {
+        getMousePosition(e);
+        mouse.isDown = true;
+    }
+}
+var mouseUp = function(e) { 
+    if (e.which == 1) {
+        mouse.isDown = false;
+        ball1.velocity.y = (ball1.position.y - mouse.y) /10;
+        ball1.velocity.x = (ball1.position.x - mouse.x) / 10;
+    }
+}
+
+var setup = function() {
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext("2d");
+    
+    canvas.onmousemove = getMousePosition;
+    canvas.onmousedown = mouseDown;
+    canvas.onmouseup = mouseUp;
+    
+    ctx.fillStyle = 'red';
+    ctx.strokeStyle = '#000000';
+    loopTimer = setInterval(loop, frameDelay);
+}
+var loop = function() {
+    if ( ! mouse.isDown) {
+        // Do physics
+            // Drag force: Fd = -1/2 * Cd * A * rho * v * v
+        var Fx = -0.5 * Cd * A * rho * ball1.velocity.x * ball1.velocity.x * ball1.velocity.x / Math.abs(ball1.velocity.x);
+        var Fy = -0.5 * Cd * A * rho * ball1.velocity.y * ball1.velocity.y * ball1.velocity.y / Math.abs(ball1.velocity.y);
+        if ((ball1.velocity.x<0.1 && ball1.velocity.x>0) && (ball1.velocity.y<0.1 && ball1.velocity.y>0)||(ball1.velocity.y>-0.1 && ball1.velocity.y<0)){
+            ball1.velocity.x=0;
+            ball1.velocity.y=0;
+        }
+        if ((ball1.velocity.x>-0.1 && ball1.velocity.x<0) && (ball1.velocity.y<0.1 && ball1.velocity.y>0)||(ball1.velocity.y>-0.1 && ball1.velocity.y<0)){
+            ball1.velocity.x=0;
+            ball1.velocity.y=0;
+        }
+        
+        Fx = (isNaN(Fx) ? 0 : Fx);
+        Fy = (isNaN(Fy) ? 0 : Fy);
+        
+            // Calculate acceleration ( F = ma )
+        var ax = Fx / ball.mass;
+        var ay = Fy / ball.mass;
+            // Integrate to get velocity
+        ball1.velocity.x += ax*frameRate;
+        ball1.velocity.y += ay*frameRate;
+        
+            // Integrate to get position
+        ball1.position.x += ball1.velocity.x*frameRate*100;
+        ball1.position.y += ball1.velocity.y*frameRate*100;
+        ball1.originalposition.x=ball1.position.x ;
+        ball1.originalposition.y=ball1.position.y;
+    }
+    // Handle collisions
+    if (ball1.position.y > height - ball.radius) {
+        ball1.velocity.y *= ball.restitution;
+        ball1.position.y = height - ball.radius;
+    }
+    if (ball1.position.x > width - ball.radius) {
+        ball1.velocity.x *= ball.restitution;
+        ball1.position.x = width - ball.radius;
+    }
+    if (ball1.position.x < ball.radius) {
+        ball1.velocity.x *= ball.restitution;
+        ball1.position.x = ball.radius;
+    }
+    if (ball1.position.y < ball.radius) {
+        ball1.velocity.y *=ball.restitution;
+        ball1.position.y = ball.radius;
+    }
+
+    // Draw the ball
+    
+    
+    ctx.clearRect(0,0,width,height);
+    
+    ctx.save();
+    
+    ctx.translate(ball1.position.x, ball1.position.y);
+    ctx.beginPath();
+    ctx.arc(0, 0, ball.radius, 0, Math.PI*2, true);
+    ctx.fill();
+    ctx.closePath();
+    
+    ctx.restore();
+
+
+
+    // Draw the slingshot
+    if (mouse.isDown) {
+        ctx.beginPath();
+        ctx.moveTo(ball1.position.x, ball1.position.y);
+        if (mouse.x-ball1.position.x<10 &&  && mouse.y-ball1.position.y<10){
+        ctx.lineTo(mouse.x, mouse.y);
+    }
+        ctx.stroke();
+        ctx.closePath();
+    }
+    
+}
+    setup();
+       </script>
+</html>
+
