@@ -19,9 +19,9 @@ var ball = {
     restitution: -0.7// Effects speed 
     };
 var ball1 = {
-    position: {x: 100, y: 100}, // starting position
-    originalposition: {x: 100, y:100},
-    velocity: {x: 0, y: 0}, // start speed
+    line: {x: 0, y: 0},
+    position: {x: 100, y: 100}, // starting position // start speed
+    velocity: {x: 0, y: 0} // start speed
 };
 var Cd = 0.4;  // EFFECTS SLOW DOWN SPEED
 var rho = 15; // kg / m^3 EFFECTS SLOW DOWN SPEED
@@ -87,8 +87,6 @@ var loop = function() {
             // Integrate to get position
         ball1.position.x += ball1.velocity.x*frameRate*100;
         ball1.position.y += ball1.velocity.y*frameRate*100;
-        ball1.originalposition.x=ball1.position.x ;
-        ball1.originalposition.y=ball1.position.y;
     }
     // Handle collisions
     if (ball1.position.y > height - ball.radius) {
@@ -126,12 +124,23 @@ var loop = function() {
 
 
     // Draw the slingshot
+    
     if (mouse.isDown) {
         ctx.beginPath();
         ctx.moveTo(ball1.position.x, ball1.position.y);
-        if (mouse.x-ball1.position.x<10 &&  && mouse.y-ball1.position.y<10){
-        ctx.lineTo(mouse.x, mouse.y);
-    }
+
+        if (mouse.x-ball1.position.x<100 && mouse.x-ball1.position.x>-100 && mouse.y-ball1.position.y<100 && mouse.y-ball1.position.y>-100){
+            ctx.lineTo(mouse.x, mouse.y);
+            ball1.line.x=mouse.x;
+            ball1.line.y=mouse.y;
+
+        
+        }
+        else
+        {
+        ctx.lineTo(ball1.line.x, ball1.line.y);
+
+        }
         ctx.stroke();
         ctx.closePath();
     }
@@ -140,4 +149,5 @@ var loop = function() {
     setup();
        </script>
 </html>
+
 
