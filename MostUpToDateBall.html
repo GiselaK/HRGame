@@ -89,7 +89,13 @@ var loop = function() {
         ball1.position.y += ball1.velocity.y*frameRate*100;
     }
     // Handle collisions
-    if (ball1.position.y > height - ball.radius) {
+    if (ball1.position.x<=15||ball1.position.x>=445){
+        ball1.velocity.x=-ball1.velocity.x
+    }
+    if (ball1.position.y<=15||ball1.position.y>=345){
+        ball1.velocity.y=-ball1.velocity.y
+    }
+    /*if (ball1.position.y > height - ball.radius) {
         ball1.velocity.y *= ball.restitution;
         ball1.position.y = height - ball.radius;
     }
@@ -105,6 +111,7 @@ var loop = function() {
         ball1.velocity.y *=ball.restitution;
         ball1.position.y = ball.radius;
     }
+    */
 
     // Draw the ball
     
