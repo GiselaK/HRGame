@@ -1,9 +1,3 @@
-<html>
-<head>
-	</head>
-	<canvas id="canvas" height="400" width="500">Get a better browser!</canvas>
-<script type="text/javascript"></script>
-<script>// Gravity 
 // Gravity 
 var width = 500;//width of bg
 var height = 400;//height of bg
@@ -131,6 +125,3 @@ var loop = function() {
     
 }
     setup();
-       </script>
-</html>
-
