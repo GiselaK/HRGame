@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<h2> HOLA </h2> 
+  <body>
+    <script type="text/javascript" src="iioEngine-1.2.1.min.js"></script>
+    <script type="text/javascript">
+ 
+        Helloiio = function(io){
+          io.addObj(new iio.Text('Hello iio!!', io.canvas.center)
+              .setFont('30px Consolas')
+              .setTextAlign('center')
+              .setFillStyle('black'));
+        }; iio.start(Helloiio);
+
+
+ 
+    </script>
+  </body>
+</html>
