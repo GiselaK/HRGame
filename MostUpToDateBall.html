@@ -2,8 +2,9 @@
 
 <head>
     </head>
-    <canvas id="canvas" height="400" width="500">Get a better browser!</canvas>
+    <canvas id="canvas" height="400" width="500"> Get a better browser!</canvas>
 <script type="text/javascript"></script>
+
 <script>// Gravity 
 // Gravity 
 var width = 500;//width of bg
@@ -16,13 +17,40 @@ var loopTimer = false;
 var ball = {
     mass: 0.1, //kg
     radius: 15, // 1px = 1cm  // Size of ball
-    restitution: -0.7// Effects speed 
+    restitution: -0.7,// Effects speed 
+    velocity: {x: 0, y: 0}
     };
-var ball1 = {
-    line: {x: 0, y: 0},
-    position: {x: 100, y: 100}, // starting position // start speed
-    velocity: {x: 0, y: 0} // start speed
-};
+
+var ball1 = Object.create(ball);
+ball1.position = {x: 100, y: 100};
+ball1.line = {x: 0, y: 0};
+//ball1.img = "src= 'ball.png'";
+
+make_base();
+
+function make_base()
+{
+  ball1.base_image = new Image();
+  ball1.base_image.src = 'ball.png';
+  ball1.base_image.onload = function(){
+    ctx.drawImage(ball1.base_image, 100, 100);
+    console.log(ball1.base_image);
+
+    ball2.base_image = new Image();
+    ball2.base_image.src = 'BlueBall.png';
+    ball2.base_image.onload = function() {
+        ctx.drawImage(ball2.base_image, 300,100);
+        console.log(ball2.base_image);
+    }
+  }
+}
+
+var ball2 = Object.create(ball);
+ball2.line = {x: 0, y:0 };
+ball2.position = {x:300, y: 100};
+console.log(ball2);
+
+
 var Cd = 0.4;  // EFFECTS SLOW DOWN SPEED
 var rho = 15; // kg / m^3 EFFECTS SLOW DOWN SPEED
 var A = Math.PI * ball.radius * ball.radius / (10000); // m^2
@@ -55,7 +83,7 @@ var setup = function() {
     canvas.onmousedown = mouseDown;
     canvas.onmouseup = mouseUp;
     
-    ctx.fillStyle = 'red';
+    ctx.fillStyle = 'ball.png';
     ctx.strokeStyle = '#000000';
     loopTimer = setInterval(loop, frameDelay);
 }
@@ -89,13 +117,7 @@ var loop = function() {
         ball1.position.y += ball1.velocity.y*frameRate*100;
     }
     // Handle collisions
-    if (ball1.position.x<=15||ball1.position.x>=445){
-        ball1.velocity.x=-ball1.velocity.x
-    }
-    if (ball1.position.y<=15||ball1.position.y>=345){
-        ball1.velocity.y=-ball1.velocity.y
-    }
-    /*if (ball1.position.y > height - ball.radius) {
+    if (ball1.position.y > height - ball.radius) {
         ball1.velocity.y *= ball.restitution;
         ball1.position.y = height - ball.radius;
     }
@@ -111,18 +133,28 @@ var loop = function() {
         ball1.velocity.y *=ball.restitution;
         ball1.position.y = ball.radius;
     }
-    */
 
     // Draw the ball
     
     
-    ctx.clearRect(0,0,width,height);
+    // ctx.clearRect(0,0,width,height);
     
     ctx.save();
     
     ctx.translate(ball1.position.x, ball1.position.y);
     ctx.beginPath();
-    ctx.arc(0, 0, ball.radius, 0, Math.PI*2, true);
+    
+ /*   base_image = new Image();
+  base_image.src = 'ball.png';
+  base_image.onload = function(){
+      console.log('loaded');
+      */
+     // ctx.drawImage(base_image, this.x, this.y, this.width, this.height);
+      //return ctx.fillText("" + this.score + "/" + this.highest, this.x, this.y - 2);
+  //}
+    //ctx.arc(0, 0, ball.radius, 0, Math.PI*2, true);
+    //ctx.arc(ball1.position.x, ball1.position.y, ball1.radius, 0, Math.PI*2, true);
+    //ctx.arc(ball2.position.x, ball2.position.y, ball2.radius, 0, Math.PI*2, true);
     ctx.fill();
     ctx.closePath();
     
@@ -151,10 +183,7 @@ var loop = function() {
         ctx.stroke();
         ctx.closePath();
     }
-    
 }
     setup();
        </script>
 </html>
-
-
