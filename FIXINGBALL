@@ -1,5 +1,4 @@
 <html>
-
 <head>
 </head>
 <canvas id="canvas" height="400" width="500"
@@ -7,7 +6,8 @@ style="border:1px solid #000000;"> </canvas>
 
 <script type="text/javascript"></script>
 
-<script>// Gravity 
+<script>
+console.log("code not broken whooopie!")// Gravity 
 // Gravity 
 var width = 500;//width of bg
 var height = 400;//height of bg
@@ -146,20 +146,11 @@ var loop = function() {
 }
 
     // Bounce off Walls
-    // Draw the ball
-    
-   // ctx.save();
     
     ctx.translate(ball1.position.x, ball1.position.y);
-    
-    //ctx.restore();
-
-
 
     // Draw the slingshot
     
-    
-
             if (shouldDrawSlingshot===true)
             {
                 while(mouseDown){
@@ -168,7 +159,11 @@ var loop = function() {
                     ball1.line.y=mouse.y;
                     clearCanvasRedraw();
                     newpath1=false;
-                //console.log(newpath1)
+                
+            }
+            if (mouseUp){
+                drawBall();
+                clearCanvasRedraw();
             }
 
            else
@@ -213,3 +208,4 @@ var loop = function() {
 }
 setup();
 </script>
+</html>
