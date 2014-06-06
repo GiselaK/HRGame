@@ -1,9 +1,6 @@
 <html>
 <canvas id="canvas" height="400" width="500"
 style="border:1px solid #000000;"> </canvas>
-
-<script type="text/javascript"></script>
-
 <script>
 console.log("code not broken whooopie!")// Gravity 
 // Gravity 
@@ -26,6 +23,7 @@ var ball = {
 var ball1 = Object.create(ball);
 ball1.position = {x: 100, y: 100};
 ball1.line = {x: 0, y: 0};
+ball1.onmousedown
 
 var ball2 = Object.create(ball);
 ball2.line = {x: 0, y:0 };
@@ -56,6 +54,8 @@ function make_base()
 ball2.base_image.onload = function() {
     ctx.drawImage(ball2.base_image, ball2.position.x,ball2.position.y);
 }
+}
+
 
 var Cd = 0.4;  // EFFECTS SLOW DOWN SPEED
 var rho = 15; // kg / m^3 EFFECTS SLOW DOWN SPEED
@@ -82,6 +82,29 @@ var mouseUp = function(e) {
         //player1=!player1;
     }
 }
+function reDrawCanvas(){
+            if (shouldDrawSlingshot()===true)
+            {
+                while(mouse.isDown){
+                    // clearCanvasRedraw();
+                    ball1.line.x=mouse.x;
+                    ball1.line.y=mouse.y;
+                    drawSlingshot();
+                    newpath1=false;
+                }
+                
+            }
+            if (!mouse.isDown){
+                clearCanvasRedraw();
+            }
+
+           else
+         {
+            newpath1=false;
+            ctx.lineTo(ball1.line.x, ball1.line.y);
+
+        }
+    }
 
 var setup = function() {
     canvas = document.getElementById("canvas");
@@ -90,10 +113,14 @@ var setup = function() {
     canvas.onmousemove = getMousePosition;
     canvas.onmousedown = mouseDown;
     canvas.onmouseup = mouseUp;
-    loopTimer = setInterval(loop, frameDelay);
+    loopTimer = setInterval (function()
+        {
+            loop();
+            reDrawCanvas();
+        }, frameDelay);
 }
 var shouldDrawSlingshot = function(){
-    if (mouse.isDown && player1) {
+    if (player1) {
         //console.log("mouse:",mouse, "ballpos:",ball1.position);
     console.log(mouse)
     } 
@@ -116,62 +143,35 @@ var drawSlingshot =function(){
     ctx.closePath();
 }
 var loop = function() {
-    if ( ! mouse.isDown) {
-        // Do physics
-            // Drag force: Fd = -1/2 * Cd * A * rho * v * v
-        var Fx = -0.5 * Cd * A * rho * ball1.velocity.x * ball1.velocity.x * ball1.velocity.x / Math.abs(ball1.velocity.x);
-        var Fy = -0.5 * Cd * A * rho * ball1.velocity.y * ball1.velocity.y * ball1.velocity.y / Math.abs(ball1.velocity.y);
-        if ((ball1.velocity.x<0.1 && ball1.velocity.x>0) && (ball1.velocity.y<0.1 && ball1.velocity.y>0)||(ball1.velocity.y>-0.1 && ball1.velocity.y<0)){
-            ball1.velocity.x=0;
-            ball1.velocity.y=0;
-        }
-        if ((ball1.velocity.x>-0.1 && ball1.velocity.x<0) && (ball1.velocity.y<0.1 && ball1.velocity.y>0)||(ball1.velocity.y>-0.1 && ball1.velocity.y<0)){
-            ball1.velocity.x=0;
-            ball1.velocity.y=0;
-        }
-        
-        Fx = (isNaN(Fx) ? 0 : Fx);
-        Fy = (isNaN(Fy) ? 0 : Fy);
-        
+     if ( ! mouse.isDown) {
+   var Fx = -0.5 * Cd * A * rho * ball1.velocity.x * ball1.velocity.x * ball1.velocity.x / Math.abs(ball1.velocity.x);
+            var Fy = -0.5 * Cd * A * rho * ball1.velocity.y * ball1.velocity.y * ball1.velocity.y / Math.abs(ball1.velocity.y);
+            if ((ball1.velocity.x<0.1 && ball1.velocity.x>0) && (ball1.velocity.y<0.1 && ball1.velocity.y>0)||(ball1.velocity.y>-0.1 && ball1.velocity.y<0)){
+                ball1.velocity.x=0;
+                ball1.velocity.y=0;
+            }
+            if ((ball1.velocity.x>-0.1 && ball1.velocity.x<0) && (ball1.velocity.y<0.1 && ball1.velocity.y>0)||(ball1.velocity.y>-0.1 && ball1.velocity.y<0)){
+                ball1.velocity.x=0;
+                ball1.velocity.y=0;
+            }
+      Fx = (isNaN(Fx) ? 0 : Fx);
+            Fy = (isNaN(Fy) ? 0 : Fy);
+
             // Calculate acceleration ( F = ma )
-        var ax = Fx / ball.mass;
-        var ay = Fy / ball.mass;
-            // Integrate to get velocity
-        ball1.velocity.x += ax*frameRate;
-        ball1.velocity.y += ay*frameRate;
-        
+            var ax = Fx / ball.mass;
+            var ay = Fy / ball.mass;
+     ball1.velocity.x += ax*frameRate;
+     ball1.velocity.y += ay*frameRate;
+
             // Integrate to get position
-        ball1.position.x += ball1.velocity.x*frameRate*100;
-        ball1.position.y += ball1.velocity.y*frameRate*100;
-    }
-    position.y += ball1.velocity.y*frameRate*100;
+            ball1.position.x += ball1.velocity.x*frameRate*100;
+            ball1.position.y += ball1.velocity.y*frameRate*100;
 }
 
     // Bounce off Walls
 
     // Draw the slingshot
-    
-            if (shouldDrawSlingshot===true)
-            {
-                while(mouseDown){
-                    drawSlingshot();
-                    ball1.line.x=mouse.x;
-                    ball1.line.y=mouse.y;
-                    clearCanvasRedraw();
-                    newpath1=false;
-                
-            }
-            if (mouseUp){
-                drawBall();
-                clearCanvasRedraw();
-            }
 
-           else
-         {
-            newpath1=false;
-            ctx.lineTo(ball1.line.x, ball1.line.y);
-
-        }
     if (mouse.isDown && !player1) {
 
       if (mouse.x-ball2.position.x<100 && mouse.x-ball2.position.x>-100 && mouse.y-ball2.position.y<100 && mouse.y-ball2.position.y>-100)
@@ -195,7 +195,7 @@ var loop = function() {
             }  
 
 
-        
+        }
         else
         {
             newpath2=false;
@@ -206,7 +206,6 @@ var loop = function() {
     }
 
 }
-}}
-//setup();
+setup();
 </script>
 </html>
