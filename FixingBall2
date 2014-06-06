@@ -1,8 +1,10 @@
 <html>
-<canvas id="canvas" height="400" width="500"
-style="border:1px solid #000000;"> </canvas>
-<script>
-console.log("code not broken whooopie!")// Gravity 
+
+<head>
+</head>
+<canvas id="canvas" height="400" width="500" style="border:1px solid #000000;"> </canvas>
+<script type="text/javascript"></script>
+<script>// Gravity 
 // Gravity 
 var width = 500;//width of bg
 var height = 400;//height of bg
@@ -11,55 +13,31 @@ var frameRate = 1/40; // S
 var frameDelay = frameRate * 400; // ms
 var loopTimer = false;
 var player1=true;
-var newpath1=false;
-var newpath2=false;
+
 var ball = {
     mass: 0.1, //kg
     radius: 15, // 1px = 1cm  // Size of ball
-    restitution: -0.7,// Effects speed 
-    velocity: {x: 0, y: 0}
+    restitution: -0.7// Effects speed 
+};
+var ball1 = {
+    line: {x: 0, y: 0},
+    position: {x: 100, y: 100}, // starting position // start speed
+    velocity: {x: 0, y: 0},
+    Cd: 0.4,  // EFFECTS SLOW DOWN SPEED
+    rho: 1,// start speed
+    A: Math.PI * ball.radius * ball.radius / (10000)
 };
 
-var ball1 = Object.create(ball);
-ball1.position = {x: 100, y: 100};
-ball1.line = {x: 0, y: 0};
-ball1.onmousedown
-
-var ball2 = Object.create(ball);
-ball2.line = {x: 0, y:0 };
-ball2.position = {x:300, y: 100};
-
-var drawBall = function(ball){
-    ctx.drawImage(ball.base_image, ball.position.x, ball.position.y);
+var ball2 = {
+    line: {x: 0, y: 0},
+    position: {x: 300, y: 100}, // starting position // start speed
+    velocity: {x: 0, y: 0},
+    Cd: 0.4,  // EFFECTS SLOW DOWN SPEED
+    rho: 1,
+    A: Math.PI * ball.radius * ball.radius / (10000)
 };
-
-//ball1.img = "src= 'ball.png'";
-function clearCanvasRedraw (){
-   // console.log('ball1', ball1 ,'ball2 is', ball2);
-   ctx.clearRect(ball1.position.x,ball1.position.y,canvas.width,canvas.height);
-   drawBall(ball1);
-   drawBall(ball2);
-}
-make_base();
-
-function make_base()
-{
-  ball1.base_image = new Image();
-  ball1.base_image.src = 'ball.png';
-  ball2.base_image = new Image();
-  ball2.base_image.src = 'BlueBall.png';
-  ball1.base_image.onload = function(){
-   ctx.drawImage(ball1.base_image, ball1.position.x, ball1.position.y);
-}
-ball2.base_image.onload = function() {
-    ctx.drawImage(ball2.base_image, ball2.position.x,ball2.position.y);
-}
-}
-
-
-var Cd = 0.4;  // EFFECTS SLOW DOWN SPEED
-var rho = 15; // kg / m^3 EFFECTS SLOW DOWN SPEED
-var A = Math.PI * ball.radius * ball.radius / (10000); // m^2
+ // kg / m^3 EFFECTS SLOW DOWN SPEED
+// m^2
 //var ag = 9.81;  // m / s^2
 var mouse = {x: 0, y: 0, isDown: false};
 
@@ -67,7 +45,6 @@ function getMousePosition(e) {
     mouse.x = e.pageX - canvas.offsetLeft;
     mouse.y = e.pageY - canvas.offsetTop;
 }
-
 var mouseDown = function(e) {
     if (e.which == 1) {
         getMousePosition(e);
@@ -77,135 +54,207 @@ var mouseDown = function(e) {
 var mouseUp = function(e) { 
     if (e.which == 1) {
         mouse.isDown = false;
-        ball1.velocity.y = (ball1.position.y - mouse.y) /10;
-        ball1.velocity.x = (ball1.position.x - mouse.x) / 10;
-        //player1=!player1;
+        if (player1)
+        {
+            ball1.velocity.y = (ball1.position.y - mouse.y) /10;
+            ball1.velocity.x = (ball1.position.x - mouse.x) / 10;
+        }
+        else
+        {
+        ball2.velocity.y = (ball2.position.y - mouse.y) /10;
+        ball2.velocity.x = (ball2.position.x - mouse.x) / 10;
+        } 
+
+        //player1!=player1;
     }
 }
-function reDrawCanvas(){
-            if (shouldDrawSlingshot()===true)
-            {
-                while(mouse.isDown){
-                    // clearCanvasRedraw();
-                    ball1.line.x=mouse.x;
-                    ball1.line.y=mouse.y;
-                    drawSlingshot();
-                    newpath1=false;
-                }
-                
-            }
-            if (!mouse.isDown){
-                clearCanvasRedraw();
-            }
-
-           else
-         {
-            newpath1=false;
-            ctx.lineTo(ball1.line.x, ball1.line.y);
-
-        }
-    }
 
 var setup = function() {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
-    ctx.translate(ball1.position.x, ball1.position.y);
+    
     canvas.onmousemove = getMousePosition;
     canvas.onmousedown = mouseDown;
     canvas.onmouseup = mouseUp;
-    loopTimer = setInterval (function()
-        {
-            loop();
-            reDrawCanvas();
-        }, frameDelay);
-}
-var shouldDrawSlingshot = function(){
-    if (player1) {
-        //console.log("mouse:",mouse, "ballpos:",ball1.position);
-    console.log(mouse)
-    } 
-    if (mouse.x-ball1.position.x<200 && mouse.x-ball1.position.x>-200 && mouse.y-ball1.position.y<200 && mouse.y-ball1.position.y>-200)
-            /* If mouse within ball1 proxmity*/
-    {
-            console.log("hi");
-            newpath1=true;
-            return true;
-    }
-     return false;
-}
-var drawSlingshot =function(){
-    clearCanvasRedraw();
-    ctx.beginPath();
-    ctx.moveTo(ball1.position.x, ball1.position.y);
-    ctx.lineTo(mouse.x-50, mouse.y-50);
-    ctx.lineWidth=5;
-    ctx.stroke();
-    ctx.closePath();
+    
+    ctx.fillStyle = 'red';
+    ctx.strokeStyle = '#000000';
+    loopTimer = setInterval(loop, frameDelay);
 }
 var loop = function() {
-     if ( ! mouse.isDown) {
-   var Fx = -0.5 * Cd * A * rho * ball1.velocity.x * ball1.velocity.x * ball1.velocity.x / Math.abs(ball1.velocity.x);
-            var Fy = -0.5 * Cd * A * rho * ball1.velocity.y * ball1.velocity.y * ball1.velocity.y / Math.abs(ball1.velocity.y);
-            if ((ball1.velocity.x<0.1 && ball1.velocity.x>0) && (ball1.velocity.y<0.1 && ball1.velocity.y>0)||(ball1.velocity.y>-0.1 && ball1.velocity.y<0)){
-                ball1.velocity.x=0;
-                ball1.velocity.y=0;
+    if ( ! mouse.isDown) {
+        // Do physics
+            // Drag force: Fd = -1/2 * Cd * A * rho * v * v
+            if (player1)
+            {
+                var ball1Fx = -0.5 * ball1.Cd * ball1.A * ball1.rho * ball1.velocity.x * ball1.velocity.x * ball1.velocity.x / Math.abs(ball1.velocity.x);
+                var ball1Fy = -0.5 * ball1.Cd * ball1.A * ball1.rho * ball1.velocity.y * ball1.velocity.y * ball1.velocity.y / Math.abs(ball1.velocity.y);
+                if ((ball1.velocity.x<0.5 && ball1.velocity.x>0) && (ball1.velocity.y<0.5 && ball1.velocity.y>0)||(ball1.velocity.y>-0.5 && ball1.velocity.y<0)){
+                    ball1.velocity.x=0;
+                    ball1.velocity.y=0;
+                    player1=false;
+                }
+                if ((ball1.velocity.x>-0.5 && ball1.velocity.x<0) && (ball1.velocity.y<0.5 && ball1.velocity.y>0)||(ball1.velocity.y>-0.5 && ball1.velocity.y<0)){
+                    ball1.velocity.x=0;
+                    ball1.velocity.y=0;
+                    player1=false;
+                }
+                ball1Fx = (isNaN(ball1Fx) ? 0 : ball1Fx);
+                ball1Fy = (isNaN(ball1Fy) ? 0 : ball1Fy);
+                var ball1ax = ball1Fx / ball.mass;
+                var ball1ay = ball1Fy / ball.mass;
+                ball1.velocity.x += ball1ax*frameRate;
+                ball1.velocity.y += ball1ay*frameRate;
+                ball1.position.x += ball1.velocity.x*frameRate*100;
+                ball1.position.y += ball1.velocity.y*frameRate*100;
+                
             }
-            if ((ball1.velocity.x>-0.1 && ball1.velocity.x<0) && (ball1.velocity.y<0.1 && ball1.velocity.y>0)||(ball1.velocity.y>-0.1 && ball1.velocity.y<0)){
-                ball1.velocity.x=0;
-                ball1.velocity.y=0;
+            else
+            {
+                var ball2Fx = -0.5 * ball2.Cd * ball2.A * ball2.rho * ball2.velocity.x * ball2.velocity.x * ball2.velocity.x / Math.abs(ball2.velocity.x);
+                var ball2Fy = -0.5 * ball2.Cd * ball2.A * ball2.rho * ball2.velocity.y * ball2.velocity.y * ball2.velocity.y / Math.abs(ball2.velocity.y);
+                console.log("its 2nds turn FR");
+                if ((ball2.velocity.x<0.1 && ball2.velocity.x>0) && (ball2.velocity.y<0.1 && ball2.velocity.y>0)||(ball2.velocity.y>-0.1 && ball2.velocity.y<0)){
+                    ball2.velocity.x=0;
+                    ball2.velocity.y=0;
+                    player1=true;
+
+                }
+
+                if ((ball2.velocity.x>-0.1 && ball2.velocity.x<0) && (ball2.velocity.y<0.1 && ball2.velocity.y>0)||(ball2.velocity.y>-0.1 && ball2.velocity.y<0)){
+                    ball2.velocity.x=0;
+                    ball2.velocity.y=0;
+                    player1=true;
+                    console.log("its 2nds turn");
+
+                }
+
+                ball2Fx = (isNaN(ball2Fx) ? 0 : ball2Fx);
+                ball2Fy = (isNaN(ball2Fy) ? 0 : ball2Fy);
+           // Calculate acceleration ( F = ma )
+                var ball2ax = ball2Fx / ball.mass;
+                var ball2ay = ball2Fy / ball.mass;
+                // Integrate to get velocity
+                ball2.velocity.x += ball2ax*frameRate;
+                ball2.velocity.y += ball2ay*frameRate;
+                // Integrate to get position
+                ball2.position.x += ball2.velocity.x*frameRate*200;
+                ball2.position.y += ball2.velocity.y*frameRate*100;
+                
+
             }
-      Fx = (isNaN(Fx) ? 0 : Fx);
-            Fy = (isNaN(Fy) ? 0 : Fy);
+        }
+    // Handle collisions
+    if (ball1.position.x<=15||ball1.position.x>=475){
+        ball1.velocity.x = ball1.velocity.x * (-1);
+        console.log(ball1.position.x);
+        //ball1.position.x+=ball1.velocity.x;
 
-            // Calculate acceleration ( F = ma )
-            var ax = Fx / ball.mass;
-            var ay = Fy / ball.mass;
-     ball1.velocity.x += ax*frameRate;
-     ball1.velocity.y += ay*frameRate;
+    }
+    if (ball1.position.y<=15||ball1.position.y>=345){
+        ball1.velocity.y = ball1.velocity.y * (-1);
+        console.log(ball1.position.y);
+        //ball1.position.y+=ball1.velocity.y;
+    }
+    if (ball2.position.x<=15||ball2.position.x>=475){
+        ball2.velocity.x = ball2.velocity.x * (-1);
+        console.log(ball2.position.x);
+        //ball1.position.x+=ball1.velocity.x;
 
-            // Integrate to get position
-            ball1.position.x += ball1.velocity.x*frameRate*100;
-            ball1.position.y += ball1.velocity.y*frameRate*100;
-}
+    }
+    if (ball2.position.y<=15||ball2.position.y>=345){
+        ball2.velocity.y = ball2.velocity.y * (-1);
+        console.log(ball2.position.y);
+        //ball1.position.y+=ball1.velocity.y;
+    }
+    /*if (ball1.position.y > height - ball.radius) {
+        ball1.velocity.y *= ball.restitution;
+        ball1.position.y = height - ball.radius;
+    }
+    if (ball1.position.x > width - ball.radius) {
+        ball1.velocity.x *= ball.restitution;
+        ball1.position.x = width - ball.radius;
+    }
+    if (ball1.position.x < ball.radius) {
+        ball1.velocity.x *= ball.restitution;
+        ball1.position.x = ball.radius;
+    }
+    if (ball1.position.y < ball.radius) {
+        ball1.velocity.y *=ball.restitution;
+        ball1.position.y = ball.radius;
+    }
+    */
 
-    // Bounce off Walls
+    // Draw the ball
+    
+    
+    ctx.clearRect(0,0,width,height);
+    
+    ctx.save();
+    
+    //ctx.translate(ball1.position.x, ball1.position.y);
+    ctx.beginPath();
+    ctx.arc(ball1.position.x, ball1.position.y, ball.radius, 0, Math.PI*2, true);
+    ctx.arc(ball2.position.x, ball2.position.y, ball.radius, 0, Math.PI*2, true);
+    ctx.fill();
+    
+    ctx.closePath();
+    
+    ctx.restore();
+
+
 
     // Draw the slingshot
-
-    if (mouse.isDown && !player1) {
-
-      if (mouse.x-ball2.position.x<100 && mouse.x-ball2.position.x>-100 && mouse.y-ball2.position.y<100 && mouse.y-ball2.position.y>-100)
-            
+    
+    if (mouse.isDown) 
+    {
+        if (player1)
         {
-            newpath2=true;
-
-            if (newpath2===true)
+            ctx.beginPath();
+            ctx.moveTo(ball1.position.x, ball1.position.y);
+            if (mouse.x-ball1.position.x<100 && mouse.x-ball1.position.x>-100 && mouse.y-ball1.position.y<100 && mouse.y-ball1.position.y>-100)
             {
-                console.log(newpath2);
-                clearCanvasRedraw();
-                ctx.beginPath();
-                ctx.moveTo(ball2.position.x, ball2.position.y);
                 ctx.lineTo(mouse.x, mouse.y);
-                ctx.lineWidth=5;
-                ctx.stroke();
-                ctx.closePath();
+                ball1.line.x=mouse.x;
+                ball1.line.y=mouse.y;
+                console.log(ball1.line.x, ball1.line.y);
+
+             }
+            else
+            {   
+                ctx.lineTo(ball1.line.x, ball1.line.y);
+
+
+            }
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        if(!player1)
+        {
+            ctx.beginPath();
+            ctx.moveTo(ball2.position.x, ball2.position.y);
+            if (mouse.x-ball2.position.x<200 && mouse.x-ball2.position.x>-200 && mouse.y-ball2.position.y<200 && mouse.y-ball2.position.y>-200)
+            {
+                ctx.lineTo(mouse.x, mouse.y);
                 ball2.line.x=mouse.x;
                 ball2.line.y=mouse.y;
-                newpath2=false;
-            }  
+                console.log(ball2.line.x, ball2.line.y);
+
+             }
+            else
+            {   
+                ctx.lineTo(ball2.line.x, ball2.line.y);
 
 
+            }
+            ctx.stroke();
+            ctx.closePath();
         }
-        else
-        {
-            newpath2=false;
-            ctx.lineTo(ball2.line.x, ball2.line.y);
-
-        }
-
     }
 
 }
 setup();
 </script>
 </html>
+
