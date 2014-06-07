@@ -6,7 +6,7 @@
 <style type="text/css" media="screen">
         canvas, img {display: block; margin: 1em auto; border: 1px solid black;}
         #canvas {
-            background-image:url("concrete1.jpg");
+         background-image:url("concrete1.jpg");
         }
 
 </style>
@@ -20,13 +20,12 @@ var frameDelay = frameRate * 400; // ms
 var loopTimer = false;
 var player1=true;
 
-
 var ball = {
     mass: 0.1, //kg
     radius: 30, // 1px = 1cm  // Size of ball
-    restitution: -0.7
-    // Effects speed 
+    restitution: -0.7 // Effects speed 
 };
+
 var ball1 = Object.create(ball);
     ball1.line= {x: 0, y: 0};
     ball1.position= {x: 100, y: 100}; // starting position // start speed
@@ -40,7 +39,7 @@ var ball1 = Object.create(ball);
 
 var ball2 = Object.create(ball);
     ball2.line= {x: 0, y: 0};
-    ball2.position= {x: 400, y: 300}; // starting position // start speed
+    ball2.position= {x: 1200, y: 700}; // starting position // start speed
     ball2.velocity= {x: 0, y: 0};
     ball2.Cd= 0.4;  // EFFECTS SLOW DOWN SPEED
     ball2.rho= 1;
@@ -91,7 +90,6 @@ var mouseUp = function(e) {
 var setup = function() {
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
-    
     canvas.onmousemove = getMousePosition;
     canvas.onmousedown = mouseDown;
     canvas.onmouseup = mouseUp;
@@ -102,10 +100,12 @@ var setBallSpeed=function(ball){
     ball.fy = -0.5 * ball.Cd * ball.A * ball.rho * ball.velocity.y * ball.velocity.y * ball.velocity.y / Math.abs(ball.velocity.y);
 }
 var ballShouldStop=function(ball){
-    if ((ball.velocity.x<0.5 && ball.velocity.x>0) && (ball.velocity.y<0.5 && ball.velocity.y>0)||(ball.velocity.y>-0.5 && ball.velocity.y<0)){
+    if ((ball.velocity.x<0.5 && ball.velocity.x>0) && (ball.velocity.y<0.5 && ball.velocity.y>0)||(ball.velocity.y>-0.5 && ball.velocity.y<0))
+    {
         return true;
     }
-    else if ((ball.velocity.x>-0.5 && ball.velocity.x<0) && (ball.velocity.y<0.5 && ball.velocity.y>0)||(ball.velocity.y>-0.5 && ball.velocity.y<0)) {
+    else if ((ball.velocity.x>-0.5 && ball.velocity.x<0) && (ball.velocity.y<0.5 && ball.velocity.y>0)||(ball.velocity.y>-0.5 && ball.velocity.y<0)) 
+    {
         return true;
     }
     return false;
@@ -113,7 +113,6 @@ var ballShouldStop=function(ball){
 var stopBall= function(ball){
     ball.velocity.x=0;
     ball.velocity.y=0;
-
 }
 var setBallLoopInfo=function(ball){
     ball.fx = (isNaN(ball.fx) ? 0 : ball.fx);
@@ -125,40 +124,43 @@ var setBallLoopInfo=function(ball){
     ball.position.x += ball.velocity.x*frameRate*100;
     ball.position.y += ball.velocity.y*frameRate*100;
 }
-var wallCollision=function(ball)
-{
-    if (ball.position.x<=15||ball.position.x>=1270){
+var wallCollision=function(ball){
+    if (ball.position.x<=15||ball.position.x>=1270)
+    {
+        console.log(ball.position);
         ball.velocity.x = ball.velocity.x * (-1);
-
     }
-    if (ball.position.y<=15||ball.position.y>=770){
+    if (ball.position.y<=15||ball.position.y>=770)
+    {
         ball.velocity.y = ball.velocity.y * (-1);
     }
 }
-var loop = function() {
-    if ( ! mouse.isDown) {
-            if (player1)
+var loop = function(){
+    if ( ! mouse.isDown) 
+    {
+        if (player1)
+        {
+            setBallSpeed(ball1);
+            wallCollision(ball1);
+            if (ballShouldStop(ball1))
             {
-                setBallSpeed(ball1);
-                wallCollision(ball1);
-
-                if (ballShouldStop(ball1)){
-                    stopBall(ball1);
-                    player1=false;
-                }  
-                setBallLoopInfo(ball1);
-            }
-            else
+                stopBall(ball1);
+                player1=false;
+            }  
+            setBallLoopInfo(ball1);
+        }
+        else
+        {
+            setBallSpeed(ball2);
+            wallCollision(ball2);
+            if (ballShouldStop(ball2))
             {
-                setBallSpeed(ball2);
-                wallCollision(ball2);
-                if (ballShouldStop(ball2)){
-                    stopBall(ball2);
-                    player1=true;
+                stopBall(ball2);
+                player1=true;
 
-                }
-                setBallLoopInfo(ball2);
             }
+            setBallLoopInfo(ball2);
+        }
             //ball collision
            // if(ball1.position.x-ball2.position.x< 20 && ball1.position.x-ball2.position.x >0 || ball1.position.x - ball2.position.x > -20 && ball1.position.x - ball2.position.x < 0 )
            // {
@@ -179,15 +181,15 @@ var drawBall=function(ball){
     ctx.closePath();
     ctx.fill();
 }  
-    ctx.clearRect(0,0,width,height);
-    
-    ctx.save();
-    //ctx.translate(ball1.position.x, ball1.position.y);
-    ctx.fillStyle = 'red';
-    drawBall(ball1);
-    ctx.fillStyle ='blue';
-    drawBall(ball2); 
-    ctx.restore();
+ctx.clearRect(0,0,width,height);
+
+ctx.save();
+//ctx.translate(ball1.position.x, ball1.position.y);
+ctx.fillStyle = 'red';
+drawBall(ball1);
+ctx.fillStyle ='blue';
+drawBall(ball2); 
+ctx.restore();
 
    // Draw the slingshot
 var lineToMouse= function (ball){
@@ -209,16 +211,14 @@ var lineToMouse= function (ball){
     ctx.lineWidth = 10;
     ctx.stroke();
     ctx.closePath();
-   }
+}
     
-if (mouse.isDown) 
-{
+if (mouse.isDown){
     if (player1)
     {
         ctx.strokeStyle = 'red';
         lineToMouse(ball1);
     }
-
     if(!player1)
     {
         ctx.strokeStyle = 'blue';
