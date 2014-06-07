@@ -2,12 +2,28 @@
 
 <head>
 </head>
-<canvas id="canvas" height="400" width="500" style="border:1px solid #000000;"> </canvas>
-<script type="text/javascript"></script>
+<!-- <link rel="stylesheet" type="text/css" media="screen" href="HRGame.css"> -->
+<canvas id="canvas" height="800" width="1300"> </canvas>
+<style type="text/css" media="screen">
+        canvas, img {display: block; margin: 1em auto; border: 1px solid black;}
+        #canvas {
+            background-image:url("concrete1.jpg");
+        }
+
+</style>
 <script>// Gravity 
 // Gravity 
-var width = 500;//width of bg
-var height = 400;//height of bg
+
+// var background = new Image();
+//     background.src = "BlackHole1.jpg";
+
+//     background.onload = function () {
+//         ctx.drawImage(background,0,0);
+//         console.log("Background")
+//     }
+
+var width = 1300;//width of bg
+var height = 800;//height of bg
 var canvas = ctx = false;
 var frameRate = 1/40; // S
 var frameDelay = frameRate * 400; // ms
@@ -16,7 +32,7 @@ var player1=true;
 
 var ball = {
     mass: 0.1, //kg
-    radius: 15, // 1px = 1cm  // Size of ball
+    radius: 30, // 1px = 1cm  // Size of ball
     restitution: -0.7// Effects speed 
 };
 var ball1 = {
@@ -30,7 +46,7 @@ var ball1 = {
 
 var ball2 = {
     line: {x: 0, y: 0},
-    position: {x: 300, y: 100}, // starting position // start speed
+    position: {x: 400, y: 300}, // starting position // start speed
     velocity: {x: 0, y: 0},
     Cd: 0.4,  // EFFECTS SLOW DOWN SPEED
     rho: 1,
@@ -77,8 +93,9 @@ var setup = function() {
     canvas.onmousedown = mouseDown;
     canvas.onmouseup = mouseUp;
     
-    ctx.fillStyle = 'red';
-    ctx.strokeStyle = '#000000';
+    // ctx.fillStyle = 'red';
+    // ctx.ball2.fillStyle = 'blue';
+    //ctx.strokeStyle = 'red';
     loopTimer = setInterval(loop, frameDelay);
 }
 var loop = function() {
@@ -140,51 +157,54 @@ var loop = function() {
                 // Integrate to get position
                 ball2.position.x += ball2.velocity.x*frameRate*200;
                 ball2.position.y += ball2.velocity.y*frameRate*100;
-                
-
             }
+
+            //Trying to amke balls collide with each other
+
+            // if(player1)
+            // {
+
+            // }
+
+
+
+
+           // if(ball1.position.x-ball2.position.x< 20 && ball1.position.x-ball2.position.x >0 || ball1.position.x - ball2.position.x > -20 && ball1.position.x - ball2.position.x < 0 )
+           // {
+           //      ball1.velocity.y = ball1.velocity.y * (-1);
+           //      ball2.velocity.y = ball2.velocity.y * (-1);
+           //      console.log("ball1:",ball1.position,"ball2:",ball2.position)
+           // }
+           // if (ball1.position.y - ball2.position.y > -20 && ball1.position.y - ball2.position.y < 0 || ball1.position.y-ball2.position.y<20 && ball1.position.y-ball2.position.y >0)
+           // {
+           //      ball1.velocity.y = ball1.velocity.y * (-1);
+           //      ball2.velocity.y = ball2.velocity.y * (-1);
+           //      console.log("ball1:",ball1.position,"ball2:",ball2.position)
+           // }
         }
     // Handle collisions
-    if (ball1.position.x<=15||ball1.position.x>=475){
+    if (ball1.position.x<=15||ball1.position.x>=1270){
         ball1.velocity.x = ball1.velocity.x * (-1);
         console.log(ball1.position.x);
         //ball1.position.x+=ball1.velocity.x;
 
     }
-    if (ball1.position.y<=15||ball1.position.y>=345){
+    if (ball1.position.y<=15||ball1.position.y>=770){
         ball1.velocity.y = ball1.velocity.y * (-1);
         console.log(ball1.position.y);
         //ball1.position.y+=ball1.velocity.y;
     }
-    if (ball2.position.x<=15||ball2.position.x>=475){
+    if (ball2.position.x<=15||ball2.position.x>=1270){
         ball2.velocity.x = ball2.velocity.x * (-1);
         console.log(ball2.position.x);
         //ball1.position.x+=ball1.velocity.x;
 
     }
-    if (ball2.position.y<=15||ball2.position.y>=345){
+    if (ball2.position.y<=15||ball2.position.y>=770){
         ball2.velocity.y = ball2.velocity.y * (-1);
         console.log(ball2.position.y);
         //ball1.position.y+=ball1.velocity.y;
     }
-    /*if (ball1.position.y > height - ball.radius) {
-        ball1.velocity.y *= ball.restitution;
-        ball1.position.y = height - ball.radius;
-    }
-    if (ball1.position.x > width - ball.radius) {
-        ball1.velocity.x *= ball.restitution;
-        ball1.position.x = width - ball.radius;
-    }
-    if (ball1.position.x < ball.radius) {
-        ball1.velocity.x *= ball.restitution;
-        ball1.position.x = ball.radius;
-    }
-    if (ball1.position.y < ball.radius) {
-        ball1.velocity.y *=ball.restitution;
-        ball1.position.y = ball.radius;
-    }
-    */
-
     // Draw the ball
     
     
@@ -193,9 +213,15 @@ var loop = function() {
     ctx.save();
     
     //ctx.translate(ball1.position.x, ball1.position.y);
+    ctx.fillStyle = 'red';
     ctx.beginPath();
     ctx.arc(ball1.position.x, ball1.position.y, ball.radius, 0, Math.PI*2, true);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle ='blue';
+    ctx.beginPath();
     ctx.arc(ball2.position.x, ball2.position.y, ball.radius, 0, Math.PI*2, true);
+    ctx.closePath();
     ctx.fill();
     
     ctx.closePath();
@@ -210,9 +236,10 @@ var loop = function() {
     {
         if (player1)
         {
+            ctx.strokeStyle = 'red';
             ctx.beginPath();
             ctx.moveTo(ball1.position.x, ball1.position.y);
-            if (mouse.x-ball1.position.x<100 && mouse.x-ball1.position.x>-100 && mouse.y-ball1.position.y<100 && mouse.y-ball1.position.y>-100)
+            if (mouse.x-ball1.position.x<180 && mouse.x-ball1.position.x>-180 && mouse.y-ball1.position.y<180 && mouse.y-ball1.position.y>-180)
             {
                 ctx.lineTo(mouse.x, mouse.y);
                 ball1.line.x=mouse.x;
@@ -226,15 +253,17 @@ var loop = function() {
 
 
             }
+            ctx.lineWidth = 10;
             ctx.stroke();
             ctx.closePath();
         }
 
         if(!player1)
         {
+            ctx.strokeStyle = 'blue';
             ctx.beginPath();
             ctx.moveTo(ball2.position.x, ball2.position.y);
-            if (mouse.x-ball2.position.x<200 && mouse.x-ball2.position.x>-200 && mouse.y-ball2.position.y<200 && mouse.y-ball2.position.y>-200)
+            if (mouse.x-ball2.position.x<180 && mouse.x-ball2.position.x>-180 && mouse.y-ball2.position.y<180 && mouse.y-ball2.position.y>-180)
             {
                 ctx.lineTo(mouse.x, mouse.y);
                 ball2.line.x=mouse.x;
@@ -248,6 +277,7 @@ var loop = function() {
 
 
             }
+            ctx.lineWidth = 10;
             ctx.stroke();
             ctx.closePath();
         }
@@ -257,4 +287,3 @@ var loop = function() {
 setup();
 </script>
 </html>
-
