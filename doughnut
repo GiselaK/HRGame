@@ -3,13 +3,13 @@
 </head>
 <body id="body"> </body>
 <!-- <link rel="stylesheet" type="text/css" media="screen" href="HRGame.css"> -->
-<canvas id="canvas" height="1050" width="1050"> </canvas>
+<canvas id="canvas" height="800" width="1050"> </canvas>
 <style type="text/css" media="screen">
         canvas, img {display: block; margin: 1em auto; border: 1px solid black;}
         #canvas {
-            background-color: rgb(117, 67, 54);
-            /*background-image: url(wood1.jpg);*/
             background-image: url(pink.png);
+            background-color: rgb(117, 67, 54);
+          /*background-image: url(wood1.jpg);*/
         }
 
         #body {
@@ -20,18 +20,19 @@
 <script>
 
 var width = 1050;//width of bg
-var height = 1050;//height of bg
+var height = 800;//height of bg
 var canvas = ctx = false;
-var frameRate = 1/40; // S
+var frameRate = 1/40; // 
 var frameDelay = frameRate * 400; // ms
 var loopTimer = false;
 var player1=true;
+var shotInRange=false;
 function createBall(x, y){
      var ball = {
         mass: 0.1, //kg
         radius: 30, // 1px = 1cm  // Size of ball
         restitution: -0.7, // Effects speed 
-        line: {x: 0, y:0},
+        line: {},
         velocity: {x: 0, y: 0},
         Cd: 0.4,
         rho: 1,
@@ -52,6 +53,7 @@ function createBall(x, y){
 function getMousePosition(e) {
     mouse.x = e.pageX - canvas.offsetLeft;
     mouse.y = e.pageY - canvas.offsetTop;
+    //console.log(mouse)
 }
 var mouseDown = function(e,ball) {
     if (e.which == 1)
@@ -68,12 +70,13 @@ var mouseUp = function(e,ball) {
     if (e.which == 1) 
     {
         mouse.isDown = false;
-        if (player1&& ball1.shootable)
+        if (player1&& ball1.shootable && mouse.x-ball1.position.x<180 && mouse.x-ball1.position.x>-180 && mouse.y-ball1.position.y<180
+         && mouse.y-ball1.position.y>-180)
         {
             launchBall(ball1);
             ball1.shootable=false;
         }
-        else if (!player1&& ball2.shootable)
+        else if (!player1&& ball2.shootable &&  mouse.x-ball2.position.x<180 && mouse.x-ball2.position.x>-180 && mouse.y-ball2.position.y<180 && mouse.y-ball2.position.y>-180)
         {
             launchBall(ball2);
             ball2.shootable=false;
@@ -130,15 +133,15 @@ var wallCollision=function(ball){
     }
 }
 var hole= function (ball){
-    if (ball.position.x>575 && ball.position.x<730 && ball.position.y>320 && ball.position.y<470)
+    if (ball.position.x>325+ball.radius && ball.position.x<725-ball.radius && ball.position.y>325+ball.radius && ball.position.y<725-ball.radius)
     {
-        console.log("DIE TIME");
+        console.log("dead");
         return true;
     }
     return false;
 }
 var loop = function(){
-    if ( ! mouse.isDown) 
+    if ( ! mouse.isDown && shotInRange) 
     {
         if (player1)
         {   
@@ -152,17 +155,19 @@ var loop = function(){
             if (ballShouldStop(ball1))
             {
                 stopBall(ball1);
+                shotInRange=false;
                 player1=false;
             }  
             setBallLoopInfo(ball1);
         }
-        else if (!player1)
+        else if (!player1 && shotInRange)
         {
             setBallSpeed(ball2);
             wallCollision(ball2);
             if (ballShouldStop(ball2))
             {
                 stopBall(ball2);
+                shotInRange=false;
                 player1=true;
             }
             setBallLoopInfo(ball2);
@@ -198,12 +203,13 @@ ctx.restore();
 var lineToMouse= function (ball){
     ctx.beginPath();
     ctx.moveTo(ball.position.x, ball.position.y);
-    if (ball.shootable){
+    if (ball.shootable){//once ball shot no longer shootable
         if (mouse.x-ball.position.x<180 && mouse.x-ball.position.x>-180 && mouse.y-ball.position.y<180 && mouse.y-ball.position.y>-180)
         {
             ctx.lineTo(mouse.x, mouse.y);
             ball.line.x=mouse.x;
             ball.line.y=mouse.y;
+            shotInRange=true;
 
         }
         else 
