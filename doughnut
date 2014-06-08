@@ -3,7 +3,7 @@
 </head>
 <body id="body"> </body>
 <!-- <link rel="stylesheet" type="text/css" media="screen" href="HRGame.css"> -->
-<canvas id="canvas" height="800" width="1050"> </canvas>
+<canvas id="canvas" height="1050" width="1050"> </canvas>
 <style type="text/css" media="screen">
         canvas, img {display: block; margin: 1em auto; border: 1px solid black;}
         #canvas {
@@ -20,7 +20,7 @@
 <script>
 
 var width = 1050;//width of bg
-var height = 800;//height of bg
+var height = 1050;//height of bg
 var canvas = ctx = false;
 var frameRate = 1/40; // 
 var frameDelay = frameRate * 400; // ms
