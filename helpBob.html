@@ -3,9 +3,11 @@
 </head>
 <body id="body"> </body>
 <center>
-    <div style="display:block" id="instructions">
+    <img id="finger" src="finger.png">
+    <img id="logo" src="simpsons.png">
+     <div style="display:block" id="instructions">
         <h2> How to Play:</h2>
-        <h3> So two gangs of circular sprinkles are fighting for their territory. First group to push all of the enemy sprinkles into the hole wins.</h3><button type="button" id="play" onclick="buttonPressed();"><h4>Play Game!</h4></button></div>
+        <h3> So two circular sprinkles are fighting for their territory. First one to push the other into the hole wins.</h3><button type="button" id="play" onclick="buttonPressed();"><h4> PLAY </h4></button></div>
         <div style="display:none" id="p1wins">
             <h2> Player 1 Wins!!! <h2>
             </div>
@@ -23,7 +25,7 @@
                     <style type="text/css" media="screen">
                     canvas, img {display: block; margin: 1em auto;}
                     #canvas {
-                    	background-repeat:no-repeat;
+                        background-repeat:no-repeat;
                         background-image: url(plate9.png);
                         /*background-color: rgb(117, 67, 54);*/
                         /*background-image: url(wood1.jpg);*/
@@ -35,33 +37,46 @@
                     #play {
                         height: 80px;
                         width: 300px;
-                        background: black;
+                        /*background: ##FFD119;*/
+                        background: rgb(254, 203,0);
+
                     }
                     #p1wins{
-                    	position: absolute;
-                    	left: 450px;
-                    	top: 100px;
+                        position: absolute;
+                        left: 300px;
+                        top: 100px;
                         color: rgb(205,32,255);
                     }
                     #p2wins{
-                    	position: absolute;
-                    	left: 450px;
-                    	top: 100px;
-                  }
+                        position: absolute;
+                        left: 450px;
+                        top: 100px;
+                    }
                     #tie{
                         color: rgb(205,32,255);
                         color: blue;
                     }
                     #instructions{
-                    	position: absolute;
-                    	top: 100px;
+                        position: absolute;
+                        top: 10px;
+                        color: rgb(222, 56, 49);
+                    }   
+                    #finger{
+                        position: absolute;
+                        top: 340px;
+                        right: 5px;
+                    }
+                    #logo {
+                        position:absolute;
+                        top: 20px;
+                        left: 5px;
                     }
 
 
                     h1 {font-size:700%; color: rgb(220, 0, 0);}
                     h2 {font-size:500%}
                     h3 {font-size:300%; color: black;}
-                    h4 {font-size:200%; color: white;}
+                    h4 {font-size:200%; color: black; font-style: bold}
                     </style>
                     <script>
 // Set up canvas variables
@@ -202,14 +217,14 @@ collisionState = false;
 var ballCollision = function() {
     if(xTouching(ball1,ball2) && yTouching(ball1,ball2)) {
         if (collisionState === false) {
-	        ball1.moving = true;
-	        ball2.moving = true;
-	        manage_bounce(ball1,ball2);
-	        collisionState = true;
-		}
-	} else {
-		collisionState = false;
-	}
+            ball1.moving = true;
+            ball2.moving = true;
+            manage_bounce(ball1,ball2);
+            collisionState = true;
+        }
+    } else {
+        collisionState = false;
+    }
 }
 
 function manage_bounce(ball1, ball2) {
@@ -239,7 +254,7 @@ var setBallSpeed=function(ball){
     ball.fy = -1 * ball.Cd * ball.A * ball.rho * ball.velocity.y * ball.velocity.y * ball.velocity.y / Math.abs(ball.velocity.y);
     if (Math.abs(ball.fx)||Math.abs(ball.fy)>0)
     {
-    	ball.moving = true;
+        ball.moving = true;
     }
 }
 var ballShouldStop=function(ball){
@@ -258,7 +273,7 @@ var stopBall= function(ball){
     ball.velocity.y=0;
     ball.shootable=true;
     ball.moving=false;
-	console.log('stopping',ball.name, ball.velocity)
+    console.log('stopping',ball.name, ball.velocity)
 }
 var setBallLoopInfo=function(ball){
     ball.fx = (isNaN(ball.fx) ? 0 : ball.fx);
@@ -272,7 +287,8 @@ var setBallLoopInfo=function(ball){
     console.log('loopinfo',ball.velocity)
 }
 var plateBounce= function(ball){
-
+//i think I know why this isn't working properly
+// 
     if ((Math.abs(centerBigHole.x-ball.position.x) > 357.5) || (Math.abs(centerBigHole.y-ball.position.y)>345))
     {
         //Calculating normal
@@ -294,7 +310,7 @@ var plateBounce= function(ball){
 }
 
 var hole= function (ball){
-
+//how does this make it the center of the hole? is this the gravity aspect or?
     if ((Math.abs(centerHole.x - ball.position.x) < 94) && (Math.abs(centerHole.y - ball.position.y) < 94))
     {
         if (ball.radius>18)
@@ -341,15 +357,15 @@ var loop = function(){
                 stopBall(ball2);
             }
             if (ball1.moving){
-            	setBallLoopInfo(ball1);
+                setBallLoopInfo(ball1);
             }
             if (ball2.moving){
-            	setBallLoopInfo(ball2);
+                setBallLoopInfo(ball2);
             }
             if (!ball1.moving && !ball2.moving)
             {
-            	stopBall(ball1);
-            	stopBall(ball2);
+                stopBall(ball1);
+                stopBall(ball2);
                 player1Turn = false;
                 player2Turn = true;
            }
@@ -391,11 +407,11 @@ var loop = function(){
                 player2Turn = false;
             }
             if (ball1.moving){
-            	setBallLoopInfo(ball1);
+                setBallLoopInfo(ball1);
             }
             if (ball2.moving){
-            	setBallLoopInfo(ball2);
-        	}	
+                setBallLoopInfo(ball2);
+            }   
          }
     }
     clearRedraw(ball1,ball2);
@@ -440,7 +456,7 @@ var loop = function(){
         {
             if (player1Turn && ball1.alive)
             {
-                ctx.strokeStyle = "rgb(205,32,255)";
+                ctx.strokeStyle = "#8A008A";
                 lineToMouse(ball1);
             }
             else if(player2Turn && ball2.alive)
@@ -478,7 +494,7 @@ var loop = function(){
     var clearRedraw=function(ball1,ball2){
         ctx.clearRect(0,0,width,height);
         ctx.save();
-        ctx.fillStyle = 'rgb(205,32,255)';
+        ctx.fillStyle = '#8A008A';
         drawBall(ball1);
 // drawBall(ball3);
 // drawBall(ball5);
