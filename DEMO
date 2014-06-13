@@ -1,0 +1,516 @@
+<html>
+<head>
+</head>
+<body id="body"> </body>
+<center>
+    <img id="logo" src="simpsons.png">
+     <div style="display:block" id="instructions">
+        <img id="finger" src="finger.png">
+        <h2> How to Play:</h2>
+        <h3> So two circular sprinkles are fighting for their territory. First one to push the other into the hole wins.</h3><button type="button" id="play" onclick="buttonPressed();"><h4> PLAY </h4></button></div>
+        <div style="display:none" id="p1wins">
+            <h2> Player 1 Wins!!! <h2>
+            </div>
+            <div style="display:none" id="p2wins">
+                <h2> Player 2 Wins!!! <h2>
+                </div>
+                <div style="display:none" id="tie">
+                    <h2> Tie!!! <h2>
+                    </center></div>
+
+                
+                <!-- <link rel="stylesheet" type="text/css" media="screen" href="HRGame.css"> -->
+                <div style="display:none" id="game">
+                    <canvas id="canvas" height="960" width="960"> </canvas>
+                    <style type="text/css" media="screen">
+                    canvas, img {display: block; margin: 1em auto;}
+                    #canvas {
+                        background-repeat:no-repeat;
+                        background-image: url(plate9_with_shadow.png);
+                        /*background-color: rgb(117, 67, 54);*/
+                        /*background-image: url(wood1.jpg);*/
+                    }
+
+                    #body {
+                        background-image: url(wood1.jpg);
+                    }
+                    #play {
+                        height: 80px;
+                        width: 300px;
+                        /*background: ##FFD119;*/
+                        background: rgb(254, 203,0);
+
+                    }
+                    #p1wins{
+                        position: absolute;
+                        left: 300px;
+                        top: 100px;
+                        color: rgb(205,32,255);
+                    }
+                    #p2wins{
+                        position: absolute;
+                        left: 450px;
+                        top: 100px;
+                    }
+                    #tie{
+                        color: rgb(205,32,255);
+                        color: blue;
+                    }
+                    #instructions{
+                        position: absolute;
+                        top: 10px;
+                        color: rgb(222, 56, 49);
+                    }   
+                    #finger{
+                        position: absolute;
+                        top: 340px;
+                        right: 5px;
+                    }
+                    #logo {
+                        position:absolute;
+                        top: 20px;
+                        left: 5px;
+                    }
+
+
+                    h1 {font-size:700%; color: rgb(220, 0, 0);}
+                    h2 {font-size:500%}
+                    h3 {font-size:300%; color: black;}
+                    h4 {font-size:200%; color: black; font-style: bold}
+                    </style>
+                    <script>
+// Set up canvas variables
+var width = 960;//width of bg
+var height = 960;//height of bg
+var canvas;
+var ctx;
+var frameRate = 1/40; 
+var frameDelay = frameRate * 400;
+var theGame;
+var theIntro;
+
+var setup = function() {
+    //show game
+    theGame=document.getElementById("game");
+    theGame.style.display="block";
+    //hide instructions
+    theIntro=document.getElementById("instructions");
+    theIntro.style.display="none";
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext("2d");
+    canvas.onmousemove = getMousePosition;
+    canvas.onmousedown = mouseDown;
+    canvas.onmouseup = mouseUp;
+    // Begin the game loop
+    setInterval(loop, frameDelay);
+} 
+// Initial player logic
+//Turn to shoot
+var player1Turn = true;
+var player2Turn = false;
+//ball in motion
+var shotInRange=false;
+function createBall(x, y, name){
+   var ball = {
+        mass: 0.1, //kg
+        radius: 25, // 1px = 1cm  // Size of ball
+        restitution: -0.7, // Effects speed 
+        line: {},
+        velocity: {x: 0, y: 0},
+        Cd: 0.4,
+        rho: 1,
+        A: Math.PI * 30 /* ball radius*/* 30 /* ball radius*// (10000),
+        fx:{},
+        fy:{},
+        ax:{},
+        shootable: true,//cant be reshot once initial launch
+        alive: true,
+        moving: false,
+        name: name
+    };
+    ball.position = {x: x, y: y}; // starting position // start speed
+    return ball;    
+}
+
+var ball1 = createBall(340, 280, 'ball1');
+var ball2 = createBall(580, 700, 'ball2');
+ // var ball3 = createBall(350, 700);
+ // var ball4 = createBall(580, 280);
+ // var ball5 = createBall(700, 500);
+ // var ball6 = createBall(250, 500);
+ var mouse = {x: 0, y: 0, isDown: false};
+ var centerHole = {x: 470, y: 500};
+ var centerBigHole = {x: 472.5, y:497.5};
+
+ function getMousePosition(e){
+    mouse.x = e.pageX - canvas.offsetLeft;
+    mouse.y = e.pageY - canvas.offsetTop;
+    //console.log(mouse)
+}
+var mouseDown = function(e,ball) {
+    if (e.which == 1)
+    {
+        getMousePosition(e);
+        mouse.isDown = true;
+    }
+}
+var mouseUp = function(e,ball) { 
+    if (e.which == 1) 
+    {
+        mouse.isDown = false;
+        if (player1Turn) 
+        {
+            if(ball1.shootable && shotInRange)
+            {
+                launchBall(ball1);
+                ball1.shootable=false;
+            }
+        }
+        else if (player2Turn)
+        {
+            if (ball2.shootable && shotInRange)
+            {
+                launchBall(ball2);
+                ball2.shootable=false;
+            }    
+        }
+    }
+}
+//Makes the ball move
+var launchBall = function(ball){
+    ball.velocity.y = (ball.position.y - mouse.y) /10;
+    ball.velocity.x = (ball.position.x - mouse.x) / 10;
+}
+var mousexInRange = function (ball)
+{
+    if (mouse.x-ball.position.x<180 && mouse.x-ball.position.x>-180)
+    {
+        return true;
+    }
+    return false;
+}
+var mouseyInRange = function (ball)
+{
+    if (mouse.y-ball.position.y<180 && mouse.y-ball.position.y>-180)
+    {
+        return true;
+    }
+    return false;
+}
+var xTouching = function (firstball,secondball){
+    if ((firstball.position.x-secondball.position.x<= 50 && firstball.position.x-secondball.position.x >=0) || (firstball.position.x - secondball.position.x >= -50 && firstball.position.x - secondball.position.x <= 0))
+    {
+        return true;
+    }
+    return false;
+}
+var yTouching = function (firstball,secondball){
+    if ((firstball.position.y-secondball.position.y<= 50 && firstball.position.y-secondball.position.y >=0) || (firstball.position.y - secondball.position.y >= -50 && firstball.position.y - secondball.position.y <= 0))
+    {
+        return true;
+    }
+    return false;
+}
+
+collisionState = false;
+
+var ballCollision = function() {
+    if(xTouching(ball1,ball2) && yTouching(ball1,ball2)) {
+        if (collisionState === false) {
+            ball1.moving = true;
+            ball2.moving = true;
+            manage_bounce(ball1,ball2);
+            collisionState = true;
+        }
+    } else {
+        collisionState = false;
+    }
+}
+
+function manage_bounce(ball1, ball2) {
+        var dx = ball1.position.x-ball2.position.x;
+        var dy = ball1.position.y-ball2.position.y;
+        var collisionision_angle = Math.atan2(dy, dx);
+        var magnitude_1 = Math.sqrt((ball1.velocity.x*ball1.velocity.x)+(ball1.velocity.y*ball1.velocity.y));
+        var magnitude_2 = Math.sqrt((ball2.velocity.x*ball2.velocity.x)+(ball2.velocity.y*ball2.velocity.y));
+        var direction_1 = Math.atan2(ball1.velocity.y, ball1.velocity.x);
+        var direction_2 = Math.atan2(ball2.velocity.y, ball2.velocity.x);
+        var new_xspeed_1 = magnitude_2*Math.cos(direction_2-collisionision_angle);
+        var new_yspeed_1 = magnitude_2*Math.sin(direction_2-collisionision_angle);
+        var new_xspeed_2 = magnitude_1*Math.cos(direction_1-collisionision_angle);
+        var new_yspeed_2 = magnitude_1*Math.sin(direction_1-collisionision_angle);
+        var final_xspeed_1 = 1;
+        var final_xspeed_2 = ((2*ball1.mass)*new_xspeed_2)/(2*ball1.mass);
+        var final_yspeed_1 = 1;
+        var final_yspeed_2 = ((2*ball1.mass)*new_xspeed_2)/(2*ball1.mass);
+        ball1.velocity.x = Math.cos(collisionision_angle)*final_xspeed_1+Math.cos(collisionision_angle+Math.PI/2)*final_yspeed_1;
+        ball1.velocity.y = Math.sin(collisionision_angle)*final_xspeed_1+Math.sin(collisionision_angle+Math.PI/2)*final_yspeed_1;
+        ball2.velocity.x = Math.cos(collisionision_angle)*final_xspeed_2+Math.cos(collisionision_angle+Math.PI/2)*final_yspeed_2;
+        ball2.velocity.y = Math.sin(collisionision_angle)*final_xspeed_2+Math.sin(collisionision_angle+Math.PI/2)*final_yspeed_2;
+    
+}
+var setBallSpeed=function(ball){
+    ball.fx = -1 * ball.Cd * ball.A * ball.rho * ball.velocity.x * ball.velocity.x * ball.velocity.x / Math.abs(ball.velocity.x);
+    ball.fy = -1 * ball.Cd * ball.A * ball.rho * ball.velocity.y * ball.velocity.y * ball.velocity.y / Math.abs(ball.velocity.y);
+    if (Math.abs(ball.fx)||Math.abs(ball.fy)>0)
+    {
+        ball.moving = true;
+    }
+}
+var ballShouldStop=function(ball){
+    if ((ball.velocity.x<0.5 && ball.velocity.x>0) && (ball.velocity.y<0.5 && ball.velocity.y>0)||(ball.velocity.y>-0.5 && ball.velocity.y<0))
+    {
+        return true;
+    }
+    else if ((ball.velocity.x>-0.5 && ball.velocity.x<0) && (ball.velocity.y<0.5 && ball.velocity.y>0)||(ball.velocity.y>-0.5 && ball.velocity.y<0)) 
+    {
+        return true;
+    }
+    return false;
+}
+var stopBall= function(ball){
+    ball.velocity.x=0;
+    ball.velocity.y=0;
+    ball.shootable=true;
+    ball.moving=false;
+    console.log('stopping',ball.name, ball.velocity)
+}
+var setBallLoopInfo=function(ball){
+    ball.fx = (isNaN(ball.fx) ? 0 : ball.fx);
+    ball.fy = (isNaN(ball.fy) ? 0 : ball.fy);
+    ball.ax = ball.fx / ball.mass;
+    ball.ay = ball.fy / ball.mass;
+    ball.velocity.x += ball.ax*frameRate;
+    ball.velocity.y += ball.ay*frameRate;
+    ball.position.x += ball.velocity.x*frameRate*100;
+    ball.position.y += ball.velocity.y*frameRate*100;
+    console.log('loopinfo',ball.velocity)
+}
+var plateBounce= function(ball){
+//i think I know why this isn't working properly
+// 
+    if ((Math.abs(centerBigHole.x-ball.position.x) > 357.5) || (Math.abs(centerBigHole.y-ball.position.y)>345))
+    {
+        //Calculating normal
+        var nx = 350 -  ball.position.x ;
+        var ny = 350 -  ball.position.y ;
+        var len = Math.sqrt(nx * nx + ny * ny);
+        nx = nx / len;
+        ny = ny / len;
+
+      //new calc
+      var v_newx = ball.velocity.x - (2 *( nx * ball.velocity.x + ny * ball.velocity.y) ) * nx;
+      var v_newy = ball.velocity.y - (2 *( nx * ball.velocity.x + ny * ball.velocity.y ) ) * ny;
+
+      ball.velocity.x = v_newx;
+      ball.velocity.y = v_newy;
+          console.log('platebounce',ball.velocity)
+
+  }
+}
+
+var hole= function (ball){
+//how does this make it the center of the hole? is this the gravity aspect or?
+    if ((Math.abs(centerHole.x - ball.position.x) < 94) && (Math.abs(centerHole.y - ball.position.y) < 94))
+    {
+        if (ball.radius>18)
+        {
+            ball.radius=ball.radius/1.01;
+            ball.alive=false;
+        }
+        return true;
+    }
+    return false;
+}
+
+var loop = function(){
+    if ( ! mouse.isDown && shotInRange){
+        if (player1Turn) {
+            setBallSpeed(ball1);
+            plateBounce(ball1);
+            plateBounce(ball2);
+            ballCollision();
+            if (hole(ball1))
+            {
+                if (ball1.velocity>0.5)
+                {
+                    ball1.velocity/10;
+                }
+            }
+            if (hole(ball2))
+            {
+                if (ball2.velocity>0.5)
+                {
+                    ball2.velocity/10;
+                }
+            }
+
+
+            if (ballShouldStop(ball1))
+            {
+                stopBall(ball1);
+                shotInRange=false;
+
+            }
+            if (ballShouldStop(ball2))
+            {
+                stopBall(ball2);
+            }
+            if (ball1.moving){
+                setBallLoopInfo(ball1);
+            }
+            if (ball2.moving){
+                setBallLoopInfo(ball2);
+            }
+            if (!ball1.moving && !ball2.moving)
+            {
+                player1Turn = false;
+                player2Turn = true;
+           }
+         }
+        else if (player2Turn)
+        {
+            setBallSpeed(ball2);
+            plateBounce(ball1);
+            plateBounce(ball2);
+            ballCollision();
+            if (hole(ball2))
+            {
+                if (ball2.velocity>0.5)
+                {
+                    ball2.velocity/10;
+                }
+            }
+            if (hole(ball1))
+            {
+                if (ball1.velocity>0.5)
+                {
+                    ball1.velocity/10;
+                }
+            }
+
+            if (ballShouldStop(ball1))
+            {
+                stopBall(ball1);
+                
+            }
+            if (ballShouldStop(ball2))
+            {
+                stopBall(ball2);
+                shotInRange=false;
+            }
+            if (!ball1.moving && !ball2.moving) 
+            {
+                player1Turn = true;
+                player2Turn = false;
+            }
+            if (ball1.moving){
+                setBallSpeed(ball1);
+                setBallLoopInfo(ball1);
+            }
+            if (ball2.moving){
+                setBallLoopInfo(ball2);
+            }   
+         }
+    }
+    clearRedraw(ball1,ball2);
+    var lineToMouse = function (ball)
+    {
+        if (ball1.alive && ball2.alive)
+        {
+            ctx.beginPath();
+            ctx.moveTo(ball.position.x, ball.position.y);
+            if (ball.shootable)
+            {//once ball shot no longer shootable
+                if (mousexInRange(ball) && mouseyInRange(ball))
+                {
+                    ctx.lineTo(mouse.x, mouse.y);
+                    ball.line.x=mouse.x;
+                    ball.line.y=mouse.y;
+                    shotInRange=true;
+
+                }
+                else if (mousexInRange(ball) && !mouseyInRange(ball))
+                {
+                    ctx.lineTo(mouse.x, ball.line.y);
+                    ball.line.x=mouse.x;
+                }
+                else if (!mousexInRange(ball) && mouseyInRange(ball))
+                {
+                    ctx.lineTo(ball.line.x, mouse.y);
+                    ball.line.y=mouse.y;
+                }
+                else 
+                {   
+                    ctx.lineTo(ball.line.x, ball.line.y);
+                }
+                ctx.lineWidth = 10;
+                ctx.stroke();
+                ctx.closePath();
+            }
+        }
+
+    }
+        if (mouse.isDown)
+        {
+            if (player1Turn && ball1.alive)
+            {
+                ctx.strokeStyle = "#8A008A";
+                lineToMouse(ball1);
+            }
+            else if(player2Turn && ball2.alive)
+            {
+                ctx.strokeStyle = 'blue';
+                lineToMouse(ball2);
+            }
+        }
+        if (!ball1.alive){   
+            setTimeout(function(){theGame=document.getElementById("game");
+                theGame.style.display="none";
+                p2wins=document.getElementById("p2wins");
+                p2wins.style.display="block";}, 1500)
+        }
+        if (!ball2.alive){
+            setTimeout(function(){theGame=document.getElementById("game");
+                theGame.style.display="none";
+                p1wins=document.getElementById("p1wins")
+                p1wins.style.display="block";}, 1500);
+        }
+        if (!ball1.alive && !ball2.alive){
+            setTimeout(function(){ theGame=document.getElementById("game");
+                theGame.style.display="none";
+                tie=document.getElementById("tie")
+                tie.style.display="tie";}
+                , 1500);
+        }
+    }
+    var drawBall=function(ball){
+        ctx.beginPath();
+        ctx.arc(ball.position.x, ball.position.y, ball.radius, 0, Math.PI*2, true);
+        ctx.closePath();
+        ctx.fill();
+    }  
+    var clearRedraw=function(ball1,ball2){
+        ctx.clearRect(0,0,width,height);
+        ctx.save();
+        ctx.fillStyle = '#8A008A';
+        drawBall(ball1);
+// drawBall(ball3);
+// drawBall(ball5);
+ctx.fillStyle ='blue';
+drawBall(ball2);
+// drawBall(ball4);
+// drawBall(ball6); 
+ctx.restore();
+}
+
+
+
+
+buttonPressed = function(){
+    event.preventDefault();
+    setup();
+}
+
+</script>
+</html>
