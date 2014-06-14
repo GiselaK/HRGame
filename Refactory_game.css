@@ -1,0 +1,56 @@
+canvas, img {display: block; margin: 1em auto;}
+#game {
+background-repeat:no-repeat;
+background-image: url(plate9_with_shadow.png);
+/*background-color: rgb(117, 67, 54);*/
+/*background-image: url(wood1.jpg);*/
+}
+
+body {
+background-image: url(wood1.jpg);
+}
+#play {
+height: 80px;
+width: 300px;
+/*background: ##FFD119;*/
+background: rgb(254, 203,0);
+
+}
+#p1wins{
+position: fixed;
+left: 530px;
+top: 123px;
+/*color: rgb(205,32,255);*/
+color: #8A008A;
+}
+#p2wins{
+position: fixed;
+left: 530px;
+top: 123px;
+color: blue;
+}
+#tie{
+color: rgb(205,32,255);
+color: blue;
+}
+#instructions{
+position: absolute;
+top: 10px;
+color: rgb(222, 56, 49);
+}   
+#finger{
+position: absolute;
+top: 340px;
+right: 5px;
+}
+#logo {
+position:absolute;
+top: 20px;
+left: 5px;
+}
+
+
+h1 {font-size:700%; color: rgb(220, 0, 0);}
+h2 {font-size:500%}
+h3 {font-size:300%; color: black;}
+h4 {font-size:200%; color: black; font-style: bold}
